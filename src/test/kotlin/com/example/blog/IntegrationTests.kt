@@ -19,22 +19,26 @@ class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
         println(">> Setup")
     }
 
-    @AfterAll
-    fun teardown() {
-        println(">> Tear down")
+    @Test
+    fun `Assert blog page title, content and status code`() {
+        println(">> Assert blog page title, content and status code")
+        val entity = restTemplate.getForEntity<String>("/")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body).contains("<h1>Blog</h1>", "Reactor")
     }
 
     @Test
     fun `Assert article page title, content and status code`() {
-        println(">> TODO")
+        println(">> Assert article page title, content and status code")
+        val title = "Reactor Aluminium has landed"
+        val entity = restTemplate.getForEntity<String>("/article/${title.toSlug()}")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body).contains(title, "Lorem ipsum", "dolor sit amet")
     }
 
-
-    @Test
-    fun `Assert blog page title, content and status code`() {
-        val entity = restTemplate.getForEntity<String>("/")
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(entity.body).contains("<h1>Blog</h1>")
+    @AfterAll
+    fun teardown() {
+        println(">> Tear down")
     }
 
 }
